@@ -89,7 +89,7 @@ Given the file system in the figure, whose block size is 512 bytes
 |     | . 0    | ABF01F    | . 2    | romeo&juliet       | . 1   |     |
 |     | . . 0   | 54FF45   | . . 0   |  |   . . 0 |   |
 |     | tmp   1 | 4700C4F  | michael  4|      | shakespeare 3 |     |
-|     | aux  2 |  | Block1:202 |      | romeo&juliet 4|     |
+|     | aux  2 |  |  |      | romeo&juliet 4|     |
 
 Execute the following instructions in the order indicated, stating what information from the Files system is used at all times and what it is used for, and what are the modifications that must be made at each moment.
 
@@ -114,7 +114,7 @@ What is the number of blocks (including both the data and address blocks) that h
 - File B with a size of 200 KBytes
 - File C with a size of 2000 KBytes
 - File D with a size of 20000 KBytes
-- 
+
 What is the maximum file size?
 
 
