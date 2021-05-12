@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CodeLite_Workspace Name="Lab_Introduction_to_files" Database="" Version="10000">
-  <Project Name="Exercise06" Path="Exercise06/Exercise06.project" Active="No"/>
-  <Project Name="Exercise10" Path="Exercise10/Exercise10.project" Active="Yes"/>
+  <Project Name="Exercise06" Path="Exercise06/Exercise06.project" Active="Yes"/>
+  <Project Name="Exercise10" Path="Exercise10/Exercise10.project" Active="No"/>
   <BuildMatrix>
     <WorkspaceConfiguration Name="Debug" Selected="yes">
       <Environment/>
