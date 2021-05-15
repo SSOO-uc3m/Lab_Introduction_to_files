@@ -138,11 +138,17 @@ Since the disk is 100 MB, a File of maximum size would not fit; therefore the si
 
 Maximum size of a File = (Disk size / Block size) - Number of blocks occupied by the rest of the structures
 
+
+
+
 The typical structures that the statement defines us are:
 
-| Boot              |  SuperBlock      | Bits map | I-Nodes | Data and folders |
-|------------------------|-----------|-----------|-----------|-----------|
-| 1024 B|8 KB| |50|-----------|
+| Boot              |  SuperBlock      | Bits map | blocks of addresses | I-Nodes | Data and folders |
+|------------------------|-----------|-----------|-----------|-----------|-----------|
+| 2 Blocks|8 KiB| |-----------| |-----------| 50 |-----------|
+
+Each block pointer can accommodate:
+1 KiB * 1024 B / 1KiB * 1 address/ 4B = 256 indirect data blocks address
 
 
 Thus:
@@ -150,10 +156,14 @@ Thus:
 Boot size = 2 blocks
 Superblock size = 8 blocks
 Bitmap Size = (100 * 2 ^ 20) / 2 ^ 10 = 102.400 bits => 13 blocks
-I-Node Size = 50
-Maximum file size = (100 * 2 ^ 20/2 ^ 10) - (2 + 8 + 13 + 50) = 102400– 73 = 102327 blocks
+I-Node Size = 50 blocks
+Maximum file size =  102400  blocks
 ```
-Maximum size in bytes = 102327 * 1024 bytes = 99,92 MiB
+102.327 blocks
+
+blocks of addresses = 4 direct + (4 single) * 256  + (1 double) * (256 single) * 256 + (1 double) * (140 single) * 256 = 4 + 2 + 256 + 140 = 102,327 data blocks
+
+Maximum size in bytes = (102.327 - 4 - 1 -256 - 140) * 1024 bytes = 99,537 MiB
 
 b) In general, the parameter that is used to achieve the least number of disk accesses is the block size. The transfer of a File requires looking for each block that forms it on disk, waiting for the latency time and making the data transfer.
 
@@ -233,7 +243,7 @@ Final state of the filesystem.
 rm  /aux/michael
 ````
 1) Read the inode of the root Directory (inode 0 - Block 100) and then the first Block of data of metioned Directory (Block 200) is read, as there is the entry of 'aux' (inode 2) there is no need to read more Blocks.
-2) Read the inode of aux (inode 1 - Block 101), it is verified that it is a Directory and the first Block of data is read (Block 204), as there is the entry of 'michael (inode 4) it is not necessary to read more Blocks.
+2) Read the inode of aux (inode 2 - Block 102), it is verified that it is a Directory and the first Block of data is read (Block 202), as there is the entry of 'michael (inode 4) it is not necessary to read more Blocks.
 3) Read the inode of michael (inode 4 - Block 104), it is verified that it is a file to delete it, the number of links is decremented, since it is equal to zero, its inode and its data blocks are deleted. (block 201) for this, the bitmap will have to be updated.
 
 | ... | Blk: 100    | Blk: 101  | Blk: 102    | Blk: 103       | Blk: 104    | ... |
@@ -255,7 +265,7 @@ rm  /tmp/shakespeare
 ````
 1) Read the inode of the root Directory (inode 0 - Block 100) and then the first Block of data of metioned Directory (Block 200) is read, as there is the entry of 'tmp' (inode 1) there is no need to read more Blocks.
 2) Read the inode of aux (inode 1 - Block 101), it is verified that it is a Directory and the first Block of data is read (Block 204), as there is the entry of 'shakespeare' (inode 3) it is not necessary to read more Blocks.
-3) Read the inode of michael (inode 3 - Block 103), it is verified that it is a file to delete it, the number of links is decremented, since it is equal to zero, its inode and its data blocks are deleted. (block 203) for this, the bitmap will have to be updated.
+3) Read the inode of shakespeare (inode 3 - Block 103), it is verified that it is a file to delete it, the number of links is decremented, since it is equal to zero, its inode and its data blocks are deleted. (block 203) for this, the bitmap will have to be updated.
 
 
 | ... | Blk: 100    | Blk: 101  | Blk: 102    | Blk: 103       | Blk: 104    | ... |
@@ -265,12 +275,12 @@ rm  /tmp/shakespeare
 |     | Type:dir    | Type:dir   | Type:dir   |  |  |     |
 |     | Block: 200 | Block:204 | Block:202 |      | |     |
 
-| ... | Block 200    |Block 201   |Block 202    | Block 203       | Block 204   | ... |
-|-----|-------------|------------|------------|----------------|------------|-----|
-|     | . 0    |     | . 2    |  **-----deleted------**     | . 1   |     |
-|     | . . 0   |   | . . 0   |  |   . . 0 |   |
-|     | tmp   1 |  | |      |  **-----deleted------**|     |
-|     | aux  2 |  | |      |      |
+| ... | Block 200    |Block 201   |Block 202    | Block 203                 | Block 204              | ... |
+|-----|-------------|------------|------------|-----------------------------|------------------------|-----|
+|     | . 0         |            | . 2        |  **-----deleted------**     | . 1                    |     |
+|     | . . 0       |            | . . 0      |                             |   . . 0                |     |
+|     | tmp   1     |            |            |                             |  **-----deleted------**|     |
+|     | aux  2      |            |            |                             |                        |     |
 
 ###  Exercise 05
 
